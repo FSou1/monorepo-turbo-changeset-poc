@@ -149,3 +149,6 @@ vite.config.ts.timestamp-*
 .corepack-bin
 # npm auth written during release
 .npmrc
+# Node runtime downloaded by the CI "Setup Node" step (must never be committed)
+.node/
+node-v*-linux-x64/
