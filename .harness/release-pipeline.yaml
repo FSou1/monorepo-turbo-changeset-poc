@@ -44,6 +44,16 @@ pipeline:
               - /root/.local/share/pnpm/store
           execution:
             steps:
+              # Harness Cloud defaults to Node 18; Changesets (human-id ESM)
+              # needs Node 20+. setup-node adds Node 20 to PATH for later steps.
+              - step:
+                  type: Action
+                  name: Setup Node 20
+                  identifier: setup_node
+                  spec:
+                    uses: actions/setup-node@v4
+                    with:
+                      node-version: "20"
               - step:
                   name: Install
                   identifier: install
