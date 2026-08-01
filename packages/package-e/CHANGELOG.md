@@ -1,5 +1,11 @@
 # @fsou1/package-e
 
+## 0.0.1-rc.1
+
+### Patch Changes
+
+- f268d7d: sounds good
+
 ## 0.0.1-rc.0
 
 ### Patch Changes
