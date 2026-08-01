@@ -67,9 +67,10 @@ pipeline:
                       git fetch --tags --quiet 2>/dev/null || true
                       BASE=$(git describe --tags --abbrev=0 2>/dev/null || echo "HEAD~1")
                       echo "Affected base: $BASE"
-                      pnpm exec turbo run build test \
-                        --affected \
-                        --affected-base="$BASE"
+                      # Turbo reads the comparison base from TURBO_SCM_BASE
+                      # (there is no --affected-base flag).
+                      export TURBO_SCM_BASE="$BASE"
+                      pnpm exec turbo run build test --affected
               - step:
                   name: Version and commit
                   identifier: version

@@ -68,10 +68,13 @@ Turbo's `--affected` flag selects packages that changed on the current branch
 `package-d`; editing `package-f` selects only `package-f`.
 
 - **PR (target = `main`):** diff against the PR's target branch
-  → `turbo run build test --affected --affected-base=origin/main`
+  → `TURBO_SCM_BASE=origin/main turbo run build test --affected`
 - **Release (on `publish`):** diff against the previous release tag
-  → `turbo run build test --affected --affected-base=<last-tag>`,
+  → `TURBO_SCM_BASE=<last-tag> turbo run build test --affected`,
   then `changeset publish` releases only the bumped packages.
+
+> Turbo has no `--affected-base` flag; the comparison base (and head) come from
+> the `TURBO_SCM_BASE` / `TURBO_SCM_HEAD` environment variables.
 
 ## Harness
 

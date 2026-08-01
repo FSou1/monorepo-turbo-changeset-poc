@@ -54,6 +54,7 @@ pipeline:
                       # can diff against it and select only changed packages
                       # (plus dependents, e.g. package-c -> package-b -> package-a).
                       git fetch --no-tags origin <+codebase.targetBranch>
-                      pnpm exec turbo run build test \
-                        --affected \
-                        --affected-base=origin/<+codebase.targetBranch>
+                      # Turbo has no --affected-base flag; the comparison base
+                      # is provided via the TURBO_SCM_BASE env var.
+                      export TURBO_SCM_BASE="origin/<+codebase.targetBranch>"
+                      pnpm exec turbo run build test --affected
