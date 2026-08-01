@@ -1,0 +1,14 @@
+inputSet:
+  name: Build_FSou1_monorepo_turbo_changeset_poc_1785614834594-pr-trigger-input-set
+  identifier: Build_FSou1_monorepo_turbo_changeset_poc_1785614834594prtriggerinputset
+  orgIdentifier: default
+  projectIdentifier: monorepoturbochangesetpoc
+  pipeline:
+    identifier: Build_FSou1_monorepo_turbo_changeset_poc_1785614834594
+    properties:
+      ci:
+        codebase:
+          build:
+            type: PR
+            spec:
+              number: <+trigger.prNumber>
