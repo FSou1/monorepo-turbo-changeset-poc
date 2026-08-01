@@ -1,5 +1,5 @@
 {
-  "name": "@repo/package-f",
+  "name": "@fsou1/package-f",
   "version": "0.0.0",
   "type": "module",
   "main": "./dist/index.js",
@@ -7,8 +7,14 @@
     ".": "./dist/index.js"
   },
   "files": ["dist"],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/FSou1/monorepo-turbo-changeset-poc.git",
+    "directory": "packages/package-f"
+  },
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "registry": "https://npm.pkg.github.com"
   },
   "scripts": {
     "build": "node ../../scripts/build.mjs",

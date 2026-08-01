@@ -30,7 +30,7 @@ Each package exposes two commands, run through Turbo:
 
 ## Tooling
 
-- **pnpm workspaces** (`pnpm-workspace.yaml`) — links `@repo/*` packages.
+- **pnpm workspaces** (`pnpm-workspace.yaml`) — links `@fsou1/*` packages.
 - **Turbo** (`turbo.json`) — task graph + caching. `build` runs `^build`
   first, so `package-b` always builds before `package-a` / `package-c`.
 - **Changesets** (`.changeset/`) — versioning + publishing. `changeset publish`

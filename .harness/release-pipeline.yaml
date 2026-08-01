@@ -130,17 +130,18 @@ pipeline:
                   spec:
                     shell: Sh
                     envVariables:
-                      # npm automation token (publish rights).
-                      NPM_TOKEN: <+secrets.getValue("npm_token")>
-                      # GitHub PAT with write access (push commit + tags).
+                      # GitHub PAT with `repo` + `write:packages` scopes. Used
+                      # both to publish to GitHub Packages and to push tags.
                       GIT_TOKEN: <+secrets.getValue("git_token")>
                     command: |
                       export PATH="/harness/.node/bin:$PATH"
-                      echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc
-                      # Publishes only packages whose version isn't yet on the
+                      # Auth for GitHub Packages (packages publish there via each
+                      # package's publishConfig.registry).
+                      echo "//npm.pkg.github.com/:_authToken=${GIT_TOKEN}" > ~/.npmrc
+                      # Publishes only packages whose version isn't yet in the
                       # registry -> only the changed ones. Also creates git tags.
                       # In pre mode (prerelease) changesets auto-applies the `rc`
-                      # npm dist-tag; a stable release goes to `latest`.
+                      # dist-tag; a stable release goes to `latest`.
                       pnpm changeset publish
                       # Push the version-bump commit + release tags back to
                       # `publish` so it can be merged into main.

@@ -17,13 +17,13 @@ importers:
 
   packages/package-a:
     dependencies:
-      '@repo/package-b':
+      '@fsou1/package-b':
         specifier: workspace:*
         version: link:../package-b
 
   packages/package-b:
     dependencies:
-      '@repo/package-c':
+      '@fsou1/package-c':
         specifier: workspace:*
         version: link:../package-c
 
@@ -31,7 +31,7 @@ importers:
 
   packages/package-d:
     dependencies:
-      '@repo/package-e':
+      '@fsou1/package-e':
         specifier: workspace:*
         version: link:../package-e
 
