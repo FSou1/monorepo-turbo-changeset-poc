@@ -1,0 +1,33 @@
+pipeline:
+  name: Build monorepo-turbo-changeset-poc
+  identifier: Build_FSou1_monorepo_turbo_changeset_poc_1785614834594
+  projectIdentifier: monorepoturbochangesetpoc
+  orgIdentifier: default
+  stages:
+    - stage:
+        name: Build
+        identifier: Build
+        type: CI
+        spec:
+          cloneCodebase: true
+          execution:
+            steps:
+              - step:
+                  type: Run
+                  name: Echo Welcome Message
+                  identifier: Echo_Welcome_Message
+                  spec:
+                    shell: Sh
+                    command: echo "Welcome to Harness CI"
+          platform:
+            os: Linux
+            arch: Amd64
+          runtime:
+            type: Cloud
+            spec: {}
+  properties:
+    ci:
+      codebase:
+        connectorRef: account.Github_OAuth_1777260289768
+        repoName: FSou1/monorepo-turbo-changeset-poc
+        build: <+input>
