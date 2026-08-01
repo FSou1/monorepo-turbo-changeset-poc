@@ -55,7 +55,7 @@ pipeline:
                       corepack prepare pnpm@9.12.3 --activate
                       pnpm install --frozen-lockfile
               - step:
-                  name: Build & test affected
+                  name: Build and test affected
                   identifier: build_test_affected
                   type: Run
                   spec:
@@ -71,7 +71,7 @@ pipeline:
                         --affected \
                         --affected-base="$BASE"
               - step:
-                  name: Version + commit
+                  name: Version and commit
                   identifier: version
                   type: Run
                   spec:
@@ -103,7 +103,7 @@ pipeline:
                       git commit -m "chore: version packages ($RELEASE_TYPE)" \
                         || echo "No changesets pending — nothing to version"
               - step:
-                  name: Publish + push
+                  name: Publish and push
                   identifier: publish
                   type: Run
                   spec:
