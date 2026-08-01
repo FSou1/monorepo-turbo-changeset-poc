@@ -1,0 +1,37 @@
+trigger:
+  name: On Pull Request
+  identifier: on_pull_request
+  enabled: true
+  orgIdentifier: YOUR_ORG
+  projectIdentifier: YOUR_PROJECT
+  pipelineIdentifier: monorepo_pr
+  source:
+    type: Webhook
+    spec:
+      type: Github
+      spec:
+        type: PullRequest
+        spec:
+          connectorRef: YOUR_GIT_CONNECTOR
+          autoAbortPreviousExecutions: true
+          payloadConditions:
+            # Only PRs targeting main (feature branch -> main).
+            - key: targetBranch
+              operator: Equals
+              value: main
+          headerConditions: []
+          repoName: monorepo-turbo-changeset-poc
+          actions:
+            - Open
+            - Reopen
+            - Synchronize
+  inputYaml: |
+    pipeline:
+      identifier: monorepo_pr
+      properties:
+        ci:
+          codebase:
+            build:
+              type: PR
+              spec:
+                number: <+trigger.prNumber>

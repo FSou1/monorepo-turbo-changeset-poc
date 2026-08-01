@@ -1,0 +1,22 @@
+{
+  "name": "monorepo-turbo-changeset-poc",
+  "version": "0.0.0",
+  "private": true,
+  "packageManager": "pnpm@9.12.3",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "turbo run build",
+    "test": "turbo run test",
+    "verify": "turbo run build test",
+    "ci:affected": "turbo run build test --affected",
+    "changeset": "changeset",
+    "version-packages": "changeset version",
+    "release": "changeset publish"
+  },
+  "devDependencies": {
+    "@changesets/cli": "^2.27.9",
+    "turbo": "^2.3.3"
+  }
+}

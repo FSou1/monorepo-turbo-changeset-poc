@@ -1,0 +1,59 @@
+pipeline:
+  name: monorepo-pr
+  identifier: monorepo_pr
+  # Replace these with your Harness project/org identifiers.
+  projectIdentifier: YOUR_PROJECT
+  orgIdentifier: YOUR_ORG
+  properties:
+    ci:
+      codebase:
+        # Replace with your Git connector + repo name (or use <+input>).
+        connectorRef: YOUR_GIT_CONNECTOR
+        repoName: monorepo-turbo-changeset-poc
+        build: <+input>
+  stages:
+    - stage:
+        name: Verify changed packages
+        identifier: verify_changed
+        type: CI
+        spec:
+          cloneCodebase: true
+          # Harness Cloud infra: no Kubernetes/Docker connector needed.
+          platform:
+            os: Linux
+            arch: Amd64
+          runtime:
+            type: Cloud
+            spec: {}
+          # Cache the pnpm store + turbo cache across runs to speed up CI.
+          caching:
+            enabled: true
+            paths:
+              - .turbo
+              - /root/.local/share/pnpm/store
+          execution:
+            steps:
+              - step:
+                  name: Install
+                  identifier: install
+                  type: Run
+                  spec:
+                    shell: Sh
+                    command: |
+                      corepack enable
+                      corepack prepare pnpm@9.12.3 --activate
+                      pnpm install --frozen-lockfile
+              - step:
+                  name: Build & test affected
+                  identifier: build_test_affected
+                  type: Run
+                  spec:
+                    shell: Sh
+                    command: |
+                      # Make the PR's target branch available locally so Turbo
+                      # can diff against it and select only changed packages
+                      # (plus dependents, e.g. package-c -> package-b -> package-a).
+                      git fetch --no-tags origin <+codebase.targetBranch>
+                      pnpm exec turbo run build test \
+                        --affected \
+                        --affected-base=origin/<+codebase.targetBranch>

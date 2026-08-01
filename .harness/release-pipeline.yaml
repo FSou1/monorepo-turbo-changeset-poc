@@ -1,0 +1,127 @@
+pipeline:
+  name: monorepo-release
+  identifier: monorepo_release
+  projectIdentifier: YOUR_PROJECT
+  orgIdentifier: YOUR_ORG
+  properties:
+    ci:
+      codebase:
+        connectorRef: YOUR_GIT_CONNECTOR
+        repoName: monorepo-turbo-changeset-poc
+        # Started manually. Always releases from the `publish` branch (cut from
+        # main). Edit here if you ever need to release from another branch.
+        build:
+          type: branch
+          spec:
+            branch: publish
+  variables:
+    # Chosen at run time. `prerelease` publishes `x.y.z-rc.N` under the npm
+    # `rc` dist-tag; `release` publishes the stable version under `latest`.
+    - name: RELEASE_TYPE
+      type: String
+      value: <+input>.allowedValues(release,prerelease).default(release)
+    # GitHub "org/repo" slug used to push the version bump + tags back.
+    - name: REPO_SLUG
+      type: String
+      value: YOUR_GH_ORG/monorepo-turbo-changeset-poc
+  stages:
+    - stage:
+        name: Release changed packages
+        identifier: release_changed
+        type: CI
+        spec:
+          cloneCodebase: true
+          platform:
+            os: Linux
+            arch: Amd64
+          runtime:
+            type: Cloud
+            spec: {}
+          caching:
+            enabled: true
+            paths:
+              - .turbo
+              - /root/.local/share/pnpm/store
+          execution:
+            steps:
+              - step:
+                  name: Install
+                  identifier: install
+                  type: Run
+                  spec:
+                    shell: Sh
+                    command: |
+                      corepack enable
+                      corepack prepare pnpm@9.12.3 --activate
+                      pnpm install --frozen-lockfile
+              - step:
+                  name: Build & test affected
+                  identifier: build_test_affected
+                  type: Run
+                  spec:
+                    shell: Sh
+                    command: |
+                      # Diff against the previous release tag so only packages
+                      # changed since the last release (and their dependents)
+                      # are built + tested.
+                      git fetch --tags --quiet 2>/dev/null || true
+                      BASE=$(git describe --tags --abbrev=0 2>/dev/null || echo "HEAD~1")
+                      echo "Affected base: $BASE"
+                      pnpm exec turbo run build test \
+                        --affected \
+                        --affected-base="$BASE"
+              - step:
+                  name: Version + commit
+                  identifier: version
+                  type: Run
+                  spec:
+                    shell: Sh
+                    command: |
+                      git config user.email "release-bot@yourorg.com"
+                      git config user.name "Release Bot"
+                      RELEASE_TYPE="<+pipeline.variables.RELEASE_TYPE>"
+
+                      if [ "$RELEASE_TYPE" = "prerelease" ]; then
+                        # Enter pre mode with the `rc` tag (idempotent). Versions
+                        # become x.y.z-rc.N and publish under the `rc` dist-tag.
+                        if [ ! -f .changeset/pre.json ]; then
+                          pnpm changeset pre enter rc
+                        fi
+                      else
+                        # Stable release: leave pre mode if we were in it, so
+                        # versions drop the -rc suffix and publish to `latest`.
+                        if [ -f .changeset/pre.json ]; then
+                          pnpm changeset pre exit
+                        fi
+                      fi
+
+                      # Consume pending changesets: bump versions + changelogs.
+                      # Only packages with a changeset (and their internal
+                      # dependents) are bumped.
+                      pnpm changeset version
+                      git add -A
+                      git commit -m "chore: version packages ($RELEASE_TYPE)" \
+                        || echo "No changesets pending — nothing to version"
+              - step:
+                  name: Publish + push
+                  identifier: publish
+                  type: Run
+                  spec:
+                    shell: Sh
+                    envVariables:
+                      # npm automation token (publish rights).
+                      NPM_TOKEN: <+secrets.getValue("npm_token")>
+                      # GitHub PAT with write access (push commit + tags).
+                      GIT_TOKEN: <+secrets.getValue("git_token")>
+                    command: |
+                      echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc
+                      # Publishes only packages whose version isn't yet on the
+                      # registry -> only the changed ones. Also creates git tags.
+                      # In pre mode (prerelease) changesets auto-applies the `rc`
+                      # npm dist-tag; a stable release goes to `latest`.
+                      pnpm changeset publish
+                      # Push the version-bump commit + release tags back to
+                      # `publish` so it can be merged into main.
+                      PUSH_URL="https://x-access-token:${GIT_TOKEN}@github.com/<+pipeline.variables.REPO_SLUG>.git"
+                      git push "$PUSH_URL" HEAD:publish
+                      git push "$PUSH_URL" --tags

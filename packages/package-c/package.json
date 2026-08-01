@@ -1,0 +1,17 @@
+{
+  "name": "@repo/package-c",
+  "version": "0.0.0",
+  "type": "module",
+  "main": "./dist/index.js",
+  "exports": {
+    ".": "./dist/index.js"
+  },
+  "files": ["dist"],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "node ../../scripts/build.mjs",
+    "test": "node ../../scripts/test.mjs"
+  }
+}
