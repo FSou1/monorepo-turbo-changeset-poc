@@ -1,0 +1,15 @@
+{
+  "mode": "pre",
+  "tag": "rc",
+  "initialVersions": {
+    "@fsou1/package-a": "0.0.1",
+    "@fsou1/package-b": "0.0.0",
+    "@fsou1/package-c": "0.0.0",
+    "@fsou1/package-d": "0.0.1",
+    "@fsou1/package-e": "0.0.1",
+    "@fsou1/package-f": "0.0.0"
+  },
+  "changesets": [
+    "free-bananas-allow"
+  ]
+}
