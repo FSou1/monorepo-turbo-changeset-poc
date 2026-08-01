@@ -135,9 +135,13 @@ pipeline:
                       GIT_TOKEN: <+secrets.getValue("git_token")>
                     command: |
                       export PATH="/harness/.node/bin:$PATH"
-                      # Auth for GitHub Packages (packages publish there via each
-                      # package's publishConfig.registry).
-                      echo "//npm.pkg.github.com/:_authToken=${GIT_TOKEN}" > ~/.npmrc
+                      # Route the @fsou1 scope to GitHub Packages (reads + writes)
+                      # and provide the token. GIT_TOKEN must be a classic PAT
+                      # with `write:packages` (and `repo` for the tag push).
+                      {
+                        echo "@fsou1:registry=https://npm.pkg.github.com"
+                        echo "//npm.pkg.github.com/:_authToken=${GIT_TOKEN}"
+                      } > ~/.npmrc
                       # Publishes only packages whose version isn't yet in the
                       # registry -> only the changed ones. Also creates git tags.
                       # In pre mode (prerelease) changesets auto-applies the `rc`
