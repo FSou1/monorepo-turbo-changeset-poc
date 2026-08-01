@@ -1,12 +1,14 @@
 {
   "name": "@fsou1/package-f",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "type": "module",
   "main": "./dist/index.js",
   "exports": {
     ".": "./dist/index.js"
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/FSou1/monorepo-turbo-changeset-poc.git",
