@@ -45,17 +45,18 @@ pipeline:
           execution:
             steps:
               - step:
-                  name: Setup Node 20
+                  name: Setup Node 22
                   identifier: setup_node
                   type: Run
                   spec:
                     shell: Sh
-                    # Harness Cloud defaults to Node 18, but Changesets (human-id
-                    # is ESM-only) needs Node 20+. The Action runner (act) can't
-                    # run node20 actions, so install Node directly into the
-                    # persistent workspace; later steps prepend it to PATH.
+                    # Harness Cloud defaults to Node 18. Changesets requires an
+                    # ESM-only module (human-id) via require(), which only works
+                    # on Node 20.19+/22.12+ (require(esm) enabled by default), so
+                    # install Node 22 into the persistent workspace; later steps
+                    # prepend it to PATH.
                     command: |
-                      NODE_VERSION=20.18.0
+                      NODE_VERSION=22.18.0
                       curl -fsSL "https://nodejs.org/dist/v${NODE_VERSION}/node-v${NODE_VERSION}-linux-x64.tar.xz" | tar -xJ -C /harness
                       rm -rf /harness/.node
                       mv "/harness/node-v${NODE_VERSION}-linux-x64" /harness/.node

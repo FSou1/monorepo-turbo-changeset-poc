@@ -34,16 +34,16 @@ pipeline:
           execution:
             steps:
               - step:
-                  name: Setup Node 20
+                  name: Setup Node 22
                   identifier: setup_node
                   type: Run
                   spec:
                     shell: Sh
-                    # Harness Cloud defaults to Node 18; install Node 20 into the
+                    # Harness Cloud defaults to Node 18; install Node 22 into the
                     # persistent workspace and prepend it to PATH in later steps
                     # (keeps the toolchain aligned with the release pipeline).
                     command: |
-                      NODE_VERSION=20.18.0
+                      NODE_VERSION=22.18.0
                       curl -fsSL "https://nodejs.org/dist/v${NODE_VERSION}/node-v${NODE_VERSION}-linux-x64.tar.xz" | tar -xJ -C /harness
                       rm -rf /harness/.node
                       mv "/harness/node-v${NODE_VERSION}-linux-x64" /harness/.node
