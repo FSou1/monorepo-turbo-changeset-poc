@@ -44,16 +44,22 @@ pipeline:
               - /root/.local/share/pnpm/store
           execution:
             steps:
-              # Harness Cloud defaults to Node 18; Changesets (human-id ESM)
-              # needs Node 20+. setup-node adds Node 20 to PATH for later steps.
               - step:
-                  type: Action
                   name: Setup Node 20
                   identifier: setup_node
+                  type: Run
                   spec:
-                    uses: actions/setup-node@v4
-                    with:
-                      node-version: "20"
+                    shell: Sh
+                    # Harness Cloud defaults to Node 18, but Changesets (human-id
+                    # is ESM-only) needs Node 20+. The Action runner (act) can't
+                    # run node20 actions, so install Node directly into the
+                    # persistent workspace; later steps prepend it to PATH.
+                    command: |
+                      NODE_VERSION=20.18.0
+                      curl -fsSL "https://nodejs.org/dist/v${NODE_VERSION}/node-v${NODE_VERSION}-linux-x64.tar.xz" | tar -xJ -C /harness
+                      rm -rf /harness/.node
+                      mv "/harness/node-v${NODE_VERSION}-linux-x64" /harness/.node
+                      /harness/.node/bin/node -v
               - step:
                   name: Install
                   identifier: install
@@ -61,6 +67,7 @@ pipeline:
                   spec:
                     shell: Sh
                     command: |
+                      export PATH="/harness/.node/bin:$PATH"
                       corepack enable
                       corepack prepare pnpm@9.12.3 --activate
                       pnpm install --frozen-lockfile
@@ -71,6 +78,7 @@ pipeline:
                   spec:
                     shell: Sh
                     command: |
+                      export PATH="/harness/.node/bin:$PATH"
                       # Diff against the previous release tag so only packages
                       # changed since the last release (and their dependents)
                       # are built + tested.
@@ -88,6 +96,7 @@ pipeline:
                   spec:
                     shell: Sh
                     command: |
+                      export PATH="/harness/.node/bin:$PATH"
                       git config user.email "release-bot@yourorg.com"
                       git config user.name "Release Bot"
                       RELEASE_TYPE="<+pipeline.variables.RELEASE_TYPE>"
@@ -125,6 +134,7 @@ pipeline:
                       # GitHub PAT with write access (push commit + tags).
                       GIT_TOKEN: <+secrets.getValue("git_token")>
                     command: |
+                      export PATH="/harness/.node/bin:$PATH"
                       echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc
                       # Publishes only packages whose version isn't yet on the
                       # registry -> only the changed ones. Also creates git tags.

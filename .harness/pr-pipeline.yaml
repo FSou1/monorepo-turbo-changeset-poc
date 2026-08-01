@@ -33,16 +33,21 @@ pipeline:
               - /root/.local/share/pnpm/store
           execution:
             steps:
-              # Harness Cloud defaults to Node 18; align with engines >=20 so
-              # the same toolchain is used as the release pipeline.
               - step:
-                  type: Action
                   name: Setup Node 20
                   identifier: setup_node
+                  type: Run
                   spec:
-                    uses: actions/setup-node@v4
-                    with:
-                      node-version: "20"
+                    shell: Sh
+                    # Harness Cloud defaults to Node 18; install Node 20 into the
+                    # persistent workspace and prepend it to PATH in later steps
+                    # (keeps the toolchain aligned with the release pipeline).
+                    command: |
+                      NODE_VERSION=20.18.0
+                      curl -fsSL "https://nodejs.org/dist/v${NODE_VERSION}/node-v${NODE_VERSION}-linux-x64.tar.xz" | tar -xJ -C /harness
+                      rm -rf /harness/.node
+                      mv "/harness/node-v${NODE_VERSION}-linux-x64" /harness/.node
+                      /harness/.node/bin/node -v
               - step:
                   name: Install
                   identifier: install
@@ -50,6 +55,7 @@ pipeline:
                   spec:
                     shell: Sh
                     command: |
+                      export PATH="/harness/.node/bin:$PATH"
                       corepack enable
                       corepack prepare pnpm@9.12.3 --activate
                       pnpm install --frozen-lockfile
@@ -60,6 +66,7 @@ pipeline:
                   spec:
                     shell: Sh
                     command: |
+                      export PATH="/harness/.node/bin:$PATH"
                       # Make the PR's target branch available locally so Turbo
                       # can diff against it and select only changed packages
                       # (plus dependents, e.g. package-c -> package-b -> package-a).
