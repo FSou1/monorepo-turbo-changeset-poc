@@ -2,8 +2,8 @@ trigger:
   name: On Pull Request
   identifier: on_pull_request
   enabled: true
-  orgIdentifier: YOUR_ORG
-  projectIdentifier: YOUR_PROJECT
+  orgIdentifier: default
+  projectIdentifier: monorepoturbochangesetpoc
   pipelineIdentifier: monorepo_pr
   source:
     type: Webhook
@@ -12,7 +12,7 @@ trigger:
       spec:
         type: PullRequest
         spec:
-          connectorRef: YOUR_GIT_CONNECTOR
+          connectorRef: account.Github_OAuth_1777260289768
           autoAbortPreviousExecutions: true
           payloadConditions:
             # Only PRs targeting main (feature branch -> main).
@@ -20,7 +20,7 @@ trigger:
               operator: Equals
               value: main
           headerConditions: []
-          repoName: monorepo-turbo-changeset-poc
+          repoName: FSou1/monorepo-turbo-changeset-poc
           actions:
             - Open
             - Reopen

@@ -1,13 +1,13 @@
 pipeline:
   name: monorepo-release
   identifier: monorepo_release
-  projectIdentifier: YOUR_PROJECT
-  orgIdentifier: YOUR_ORG
+  projectIdentifier: monorepoturbochangesetpoc
+  orgIdentifier: default
   properties:
     ci:
       codebase:
-        connectorRef: YOUR_GIT_CONNECTOR
-        repoName: monorepo-turbo-changeset-poc
+        connectorRef: account.Github_OAuth_1777260289768
+        repoName: FSou1/monorepo-turbo-changeset-poc
         # Started manually. Always releases from the `publish` branch (cut from
         # main). Edit here if you ever need to release from another branch.
         build:
@@ -23,7 +23,7 @@ pipeline:
     # GitHub "org/repo" slug used to push the version bump + tags back.
     - name: REPO_SLUG
       type: String
-      value: YOUR_GH_ORG/monorepo-turbo-changeset-poc
+      value: FSou1/monorepo-turbo-changeset-poc
   stages:
     - stage:
         name: Release changed packages

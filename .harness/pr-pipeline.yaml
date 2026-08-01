@@ -2,14 +2,14 @@ pipeline:
   name: monorepo-pr
   identifier: monorepo_pr
   # Replace these with your Harness project/org identifiers.
-  projectIdentifier: YOUR_PROJECT
-  orgIdentifier: YOUR_ORG
+  projectIdentifier: monorepoturbochangesetpoc
+  orgIdentifier: default
   properties:
     ci:
       codebase:
         # Replace with your Git connector + repo name (or use <+input>).
-        connectorRef: YOUR_GIT_CONNECTOR
-        repoName: monorepo-turbo-changeset-poc
+        connectorRef: account.Github_OAuth_1777260289768
+        repoName: FSou1/monorepo-turbo-changeset-poc
         build: <+input>
   stages:
     - stage:
