@@ -1,0 +1,16 @@
+inputSet:
+  name: PR Build
+  identifier: pr_build
+  orgIdentifier: default
+  projectIdentifier: monorepoturbochangesetpoc
+  pipeline:
+    identifier: monorepo_pr
+    properties:
+      ci:
+        codebase:
+          # Build the pull request that fired the trigger. Turbo then diffs
+          # against the PR's target branch to pick only changed packages.
+          build:
+            type: PR
+            spec:
+              number: <+trigger.prNumber>

@@ -25,13 +25,9 @@ trigger:
             - Open
             - Reopen
             - Synchronize
-  inputYaml: |
-    pipeline:
-      identifier: monorepo_pr
-      properties:
-        ci:
-          codebase:
-            build:
-              type: PR
-              spec:
-                number: <+trigger.prNumber>
+  # Remote pipeline: load its definition from `main`, and supply runtime
+  # inputs via a repo-stored input set (Git Experience requires this instead
+  # of inline inputYaml).
+  pipelineBranchName: main
+  inputSetRefs:
+    - pr_build
